@@ -1,0 +1,5 @@
+{
+	"block.entitydetectors.player_detector": "플레이어 감지기",
+	"block.entitydetectors.mob_detector": "몹 감지기",
+	"item.entitydetectors.imprinted_slime_ball": "각인된 슬라임볼"
+}
