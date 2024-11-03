@@ -1,9 +1,8 @@
-package commoble.entitydetectors.registrables;
+package net.commoble.entitydetectors.registrables;
 
-import commoble.entitydetectors.EntityDetectors;
-import net.minecraft.tags.ItemTags;
+import net.commoble.entitydetectors.EntityDetectors;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class MobDetectorItemHandler implements IItemHandler
 {

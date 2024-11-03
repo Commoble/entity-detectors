@@ -1,6 +1,6 @@
-package commoble.entitydetectors.registrables;
+package net.commoble.entitydetectors.registrables;
 
-import commoble.entitydetectors.EntityDetectors;
+import net.commoble.entitydetectors.EntityDetectors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;

@@ -23,6 +23,6 @@
     }
   },
   "result": {
-    "item": "entitydetectors:mob_detector"
+    "id": "entitydetectors:mob_detector"
   }
 }

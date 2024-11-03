@@ -1,14 +1,15 @@
-package commoble.entitydetectors.client;
+package net.commoble.entitydetectors.client;
 
 import java.util.Optional;
 
-import commoble.entitydetectors.EntityDetectors;
-import commoble.entitydetectors.registrables.ImprintedSlimeballItem;
+import net.commoble.entitydetectors.EntityDetectors;
+import net.commoble.entitydetectors.registrables.ImprintedSlimeballItem;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraft.world.item.SpawnEggItem;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
 public class ClientProxy
 {
@@ -31,8 +32,8 @@ public class ClientProxy
 	private static int getImprintedSlimeballColor(ItemStack stack, int tintIndex)
 	{
 		return ImprintedSlimeballItem.getEntityType(stack)
-			.flatMap(type -> Optional.ofNullable(ForgeSpawnEggItem.fromEntityType(type)))
-			.map(egg -> egg.getColor(tintIndex))
+			.flatMap(holder -> Optional.ofNullable(SpawnEggItem.byId(holder.value())))
+			.map(egg -> FastColor.ARGB32.opaque(egg.getColor(tintIndex)))
 			.orElse(0xFFFFFFFF); // no tint
 	}
 }

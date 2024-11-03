@@ -1,11 +1,11 @@
-package commoble.entitydetectors;
+package net.commoble.entitydetectors;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
 public record CommonConfig(IntValue refreshRate)
 {
-	public static CommonConfig create(ForgeConfigSpec.Builder builder)
+	public static CommonConfig create(ModConfigSpec.Builder builder)
 	{
 		return new CommonConfig(
 			builder.comment("How often entity detectors will check for entities (in ticks per update)")

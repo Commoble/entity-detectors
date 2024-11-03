@@ -1,15 +1,16 @@
-package commoble.entitydetectors.registrables;
+package net.commoble.entitydetectors.registrables;
 
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import commoble.entitydetectors.EntityDetectors;
+import net.commoble.entitydetectors.EntityDetectors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -22,10 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class MobDetectorBlockEntity extends EntityDetectorBlockEntity<Mob>
 {
@@ -36,7 +34,6 @@ public class MobDetectorBlockEntity extends EntityDetectorBlockEntity<Mob>
 	private ItemStack slimeStack = ItemStack.EMPTY;
 	
 	private final IItemHandler itemHandler = new MobDetectorItemHandler(this);
-	private final LazyOptional<IItemHandler> capHolder = LazyOptional.of(() -> this.itemHandler);
 	
 	public static MobDetectorBlockEntity create(BlockPos pos, BlockState state)
 	{
@@ -46,13 +43,6 @@ public class MobDetectorBlockEntity extends EntityDetectorBlockEntity<Mob>
 	public MobDetectorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Class<? extends Mob> mobClass)
 	{
 		super(type, pos, state, mobClass);
-	}
-	
-	@Override
-	public void invalidateCaps()
-	{
-		super.invalidateCaps();
-		this.capHolder.invalidate();
 	}
 
 	public ItemStack getSlimeStack()
@@ -69,10 +59,10 @@ public class MobDetectorBlockEntity extends EntityDetectorBlockEntity<Mob>
 	
 	public boolean isEntityDetectable(Mob ent)
 	{
-		return ImprintedSlimeballItem.getEntityType(this.slimeStack).map(type -> type == ent.getType()).orElse(true);
+		return ImprintedSlimeballItem.getEntityType(this.slimeStack).map(type -> type.value() == ent.getType()).orElse(true);
 	}
 	
-	public Optional<EntityType<?>> getFilteredEntityType()
+	public Optional<Holder<EntityType<?>>> getFilteredEntityType()
 	{
 		return ImprintedSlimeballItem.getEntityType(this.slimeStack);
 	}
@@ -107,43 +97,34 @@ public class MobDetectorBlockEntity extends EntityDetectorBlockEntity<Mob>
 		}
 	}
 	
-	@Override
-	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side)
+	public IItemHandler getItemHandler(@Nullable Direction side)
 	{
-		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-		{
-			return this.capHolder.cast();
-		}
-		return super.getCapability(cap, side);
+		return this.getItemHandler(side);
 	}
 
 	@Override
-	public void load(CompoundTag compound)
+	public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries)
 	{
-		super.load(compound);
-		this.readData(compound);
-	}
-	
-	public void readData(CompoundTag compound)
-	{
+		super.loadAdditional(compound, registries);
 		if (compound.contains(FILTER_KEY))
 		{
-			this.slimeStack = ItemStack.of(compound.getCompound(FILTER_KEY));
+			CompoundTag itemTag = compound.getCompound(FILTER_KEY);
+			this.slimeStack = ItemStack.parseOptional(registries, itemTag);
 		}
 	}
-
+	
 	@Override
-	public void saveAdditional(CompoundTag nbt)
+	public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries)
 	{
-		super.saveAdditional(nbt);
-		CompoundTag itemNBT = this.slimeStack.save(new CompoundTag());
+		super.saveAdditional(nbt, registries);
+		Tag itemNBT = this.slimeStack.isEmpty() ? new CompoundTag() : this.slimeStack.save(registries);
 		nbt.put(FILTER_KEY, itemNBT);
 	}
 
 	@Override
-	public CompoundTag getUpdateTag()
+	public CompoundTag getUpdateTag(HolderLookup.Provider registries)
 	{
-		return this.saveWithoutMetadata();
+		return this.saveWithoutMetadata(registries);
 	}
 
 	@Override
@@ -151,11 +132,5 @@ public class MobDetectorBlockEntity extends EntityDetectorBlockEntity<Mob>
 	public ClientboundBlockEntityDataPacket getUpdatePacket()
 	{
 		return ClientboundBlockEntityDataPacket.create(this);
-	}
-
-	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt)
-	{
-		this.readData(pkt.getTag());
 	}
 }

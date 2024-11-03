@@ -1,9 +1,9 @@
-package commoble.entitydetectors.client;
+package net.commoble.entitydetectors.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 
-import commoble.entitydetectors.registrables.MobDetectorBlockEntity;
+import net.commoble.entitydetectors.registrables.MobDetectorBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -88,7 +88,7 @@ public class MobDetectorBlockEntityRenderer implements BlockEntityRenderer<MobDe
 			entity.setPos(teX, teY, teZ);
 			
 			poseStack.translate(0.5D, 1.0F, 0.5D);
-			poseStack.mulPose(Vector3f.YP.rotationDegrees(rotation));
+			poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
 			poseStack.scale(entityScale, entityScale, entityScale);
 			
 			renderManager.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, poseStack, buffer, 0xFFFFFF);

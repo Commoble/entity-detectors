@@ -1,4 +1,4 @@
-package commoble.entitydetectors.client;
+package net.commoble.entitydetectors.client;
 
 import java.util.Optional;
 
@@ -6,6 +6,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -31,9 +32,9 @@ public class FakeClientEntities
 		return ENTITY_LOADER.getUnchecked(EntityContext.of(type, level));
 	}
 	
-	public static Optional<Entity> getOptionalFakeEntity(Optional<EntityType<?>> maybeType, Level level)
+	public static Optional<Entity> getOptionalFakeEntity(Optional<Holder<EntityType<?>>> maybeType, Level level)
 	{
-		return maybeType.map(type -> ENTITY_LOADER.getUnchecked(EntityContext.of(type, level)));
+		return maybeType.map(type -> ENTITY_LOADER.getUnchecked(EntityContext.of(type.value(), level)));
 	}
 	
 	public static record EntityContext<T extends Entity>(EntityType<T> type, Level level)

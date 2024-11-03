@@ -20,6 +20,6 @@
     }
   },
   "result": {
-    "item": "entitydetectors:player_detector"
+    "id": "entitydetectors:player_detector"
   }
 }
